@@ -26,12 +26,93 @@ MongoClient.connect("mongodb://localhost:27017", {
 
 // User
 app.get("/", (req, res) => res.render("login.ejs"));
+
+// Registrasi
 app.get("/registrasi", (req, res) => res.render("registrasi.ejs"));
+
+app.post("/registrasi", (req, res) => {
+  // Check password and repassword sama
+  if (req.body.password !== req.body.repassword) {
+    return res.render("registrasi.ejs");
+  }
+
+  const newUser = {
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    level: 1,
+  };
+
+  db.collection("users")
+    .insertOne(newUser)
+    .then(() => res.redirect("/"))
+    .catch((err) => {
+      console.error("Error: " + err);
+      res.status(500).send("User addition failed");
+    });
+});
 
 // Admin
 app.get("/admin", (req, res) => res.render("admin/login.ejs"));
 app.get("/admin/dashboard", (req, res) => res.render("admin/dashboard.ejs"));
-app.get("/admin/useraccess", (req, res) => res.render("admin/useraccess.ejs"));
+
+// User Access
+app.get("/admin/useraccess", (req, res) =>
+  db
+    .collection("users")
+    .find({ level: 0 })
+    .toArray()
+    .then((users) => res.render("admin/useraccess.ejs", { users }))
+    .catch((err) => res.status(500).json({ error: err.message }))
+);
+
+app.get("/admin/useraccess/user", (req, res) =>
+  db
+    .collection("users")
+    .find({ level: 1 })
+    .toArray()
+    .then((users) => res.render("admin/userlist.ejs", { users }))
+    .catch((err) => res.status(500).json({ error: err.message }))
+);
+
+// Search User
+app.get("/admin/useraccess/user/search", (req, res) => {
+  const query = req.query.nama;
+  const searchQuery = {
+    username: { $regex: new RegExp(query, "i") },
+    level: 1,
+  };
+
+  db.collection("users")
+    .find(searchQuery)
+    .toArray()
+    .then((users) => res.render("admin/userlist.ejs", { users }))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// To Admin
+app.post("/admin/useraccess/toadmin", (req, res) => {
+  const userId = req.body.id;
+  const updateLevel = {
+    level: 0,
+  };
+  db.collection("users")
+    .updateOne({ _id: new ObjectId(userId) }, { $set: updateLevel })
+    .then(() => res.redirect("/admin/useraccess"))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// Remove Admin
+app.post("/admin/useraccess/remove", (req, res) => {
+  const userId = req.body.id;
+  const updateLevel = {
+    level: 1,
+  };
+  db.collection("users")
+    .updateOne({ _id: new ObjectId(userId) }, { $set: updateLevel })
+    .then(() => res.redirect("/admin/useraccess"))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
 
 // PRODUCTS PAGES
 app.get("/admin/products", (req, res) =>
@@ -45,6 +126,20 @@ app.get("/admin/products", (req, res) =>
 app.get("/admin/products/add", (req, res) =>
   res.render("admin/addproduct.ejs")
 );
+
+// Search Products
+app.get("/admin/products/search", (req, res) => {
+  const query = req.query.nama;
+  const searchQuery = {
+    nama: { $regex: new RegExp(query, "i") },
+  };
+
+  db.collection("products")
+    .find(searchQuery)
+    .toArray()
+    .then((products) => res.render("admin/products.ejs", { products }))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
 
 // Tambah Product
 app.post("/admin/products/add", (req, res) => {
@@ -92,6 +187,15 @@ app.post("/admin/products/update/:id", (req, res) => {
   };
   db.collection("products")
     .updateOne({ _id: new ObjectId(productId) }, { $set: updateProduct })
+    .then(() => res.redirect("/admin/products"))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// Hapus Product
+app.post("/admin/products/delete", (req, res) => {
+  const productId = req.body.idProduct;
+  db.collection("products")
+    .deleteOne({ _id: new ObjectId(productId) })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => res.status(500).json({ error: err.message }));
 });

@@ -27,7 +27,7 @@
             </div>
             <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
               <h2 class="text-center mb-5">Daftar Akun</h2>
-              <form>
+              <form action="/registrasi" method="post">
                 <!-- Username input -->
                 <div class="form-floating mb-3">
                   <input
@@ -48,7 +48,7 @@
                     class="form-control"
                     id="emailInput"
                     placeholder="name@example.com"
-                    name="password"
+                    name="email"
                     required
                   />
                   <label for="emailInput">Email</label>
@@ -61,7 +61,7 @@
                     class="form-control"
                     id="passwordInput"
                     placeholder="Password"
-                    name="repassword"
+                    name="password"
                     required
                   />
                   <label for="passwordInput">Password</label>
@@ -74,6 +74,7 @@
                     class="form-control"
                     id="repasswordInput"
                     placeholder="Password"
+                    name="repassword"
                     required
                   />
                   <label for="repasswordInput">Re-Password</label>
@@ -87,7 +88,7 @@
 
                 <!-- Submit button -->
                 <div class="d-grid">
-                  <button class="btn btn-primary" type="button">Daftar</button>
+                  <button class="btn btn-primary" type="submit">Daftar</button>
                 </div>
               </form>
             </div>
