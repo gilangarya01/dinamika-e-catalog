@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { MongoClient, ObjectId } = require("mongodb");
 const path = require("path");
+const session = require("express-session");
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -9,6 +10,25 @@ app.set("view engine", "ejs");
 
 // Set lokasi static files
 app.use(express.static(path.join(__dirname, "assets")));
+
+// Konfigurasi session
+app.use(
+  session({
+    secret: "secret-key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 * 60 }, // Session berlaku selama 1 jam
+  })
+);
+
+// Middleware untuk mengecek apakah user sudah login
+function isAuthenticated(req, res, next) {
+  if (req.session.user) {
+    return next();
+  } else {
+    res.redirect("/admin");
+  }
+}
 
 // Koneksi MongoDB
 let db;
@@ -54,10 +74,34 @@ app.post("/registrasi", (req, res) => {
 
 // Admin
 app.get("/admin", (req, res) => res.render("admin/login.ejs"));
-app.get("/admin/dashboard", (req, res) => res.render("admin/dashboard.ejs"));
 
-// User Access
-app.get("/admin/useraccess", (req, res) =>
+// Login
+app.post("/admin", (req, res) => {
+  let name = req.body.username;
+  const query = {
+    username: name,
+    password: req.body.password,
+    level: 0,
+  };
+  db.collection("users")
+    .findOne(query)
+    .then((user) => {
+      if (!user) {
+        return res.render("admin/login.ejs", { error: "User not found" });
+      }
+      // Simpan informasi user di session
+      req.session.user = user;
+      res.redirect("/admin/dashboard");
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// Halaman yang dilindungi oleh autentikasi
+app.get("/admin/dashboard", isAuthenticated, (req, res) =>
+  res.render("admin/dashboard.ejs")
+);
+
+app.get("/admin/useraccess", isAuthenticated, (req, res) =>
   db
     .collection("users")
     .find({ level: 0 })
@@ -66,7 +110,7 @@ app.get("/admin/useraccess", (req, res) =>
     .catch((err) => res.status(500).json({ error: err.message }))
 );
 
-app.get("/admin/useraccess/user", (req, res) =>
+app.get("/admin/useraccess/user", isAuthenticated, (req, res) =>
   db
     .collection("users")
     .find({ level: 1 })
@@ -76,7 +120,7 @@ app.get("/admin/useraccess/user", (req, res) =>
 );
 
 // Search User
-app.get("/admin/useraccess/user/search", (req, res) => {
+app.get("/admin/useraccess/user/search", isAuthenticated, (req, res) => {
   const query = req.query.nama;
   const searchQuery = {
     username: { $regex: new RegExp(query, "i") },
@@ -91,7 +135,7 @@ app.get("/admin/useraccess/user/search", (req, res) => {
 });
 
 // To Admin
-app.post("/admin/useraccess/toadmin", (req, res) => {
+app.post("/admin/useraccess/toadmin", isAuthenticated, (req, res) => {
   const userId = req.body.id;
   const updateLevel = {
     level: 0,
@@ -103,7 +147,7 @@ app.post("/admin/useraccess/toadmin", (req, res) => {
 });
 
 // Remove Admin
-app.post("/admin/useraccess/remove", (req, res) => {
+app.post("/admin/useraccess/remove", isAuthenticated, (req, res) => {
   const userId = req.body.id;
   const updateLevel = {
     level: 1,
@@ -115,7 +159,7 @@ app.post("/admin/useraccess/remove", (req, res) => {
 });
 
 // PRODUCTS PAGES
-app.get("/admin/products", (req, res) =>
+app.get("/admin/products", isAuthenticated, (req, res) =>
   db
     .collection("products")
     .find()
@@ -123,12 +167,12 @@ app.get("/admin/products", (req, res) =>
     .then((products) => res.render("admin/products.ejs", { products }))
     .catch((err) => res.status(500).json({ error: err.message }))
 );
-app.get("/admin/products/add", (req, res) =>
+app.get("/admin/products/add", isAuthenticated, (req, res) =>
   res.render("admin/addproduct.ejs")
 );
 
 // Search Products
-app.get("/admin/products/search", (req, res) => {
+app.get("/admin/products/search", isAuthenticated, (req, res) => {
   const query = req.query.nama;
   const searchQuery = {
     nama: { $regex: new RegExp(query, "i") },
@@ -142,7 +186,7 @@ app.get("/admin/products/search", (req, res) => {
 });
 
 // Tambah Product
-app.post("/admin/products/add", (req, res) => {
+app.post("/admin/products/add", isAuthenticated, (req, res) => {
   const newProduct = {
     nama: req.body.nama,
     deskripsi: req.body.deskripsi,
@@ -162,7 +206,7 @@ app.post("/admin/products/add", (req, res) => {
 });
 
 // Update Product
-app.get("/admin/products/update/:id", (req, res) => {
+app.get("/admin/products/update/:id", isAuthenticated, (req, res) => {
   const productId = req.params.id;
   db.collection("products")
     .findOne({ _id: new ObjectId(productId) })
@@ -175,7 +219,7 @@ app.get("/admin/products/update/:id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-app.post("/admin/products/update/:id", (req, res) => {
+app.post("/admin/products/update/:id", isAuthenticated, (req, res) => {
   const productId = req.params.id;
   const updateProduct = {
     nama: req.body.nama,
@@ -192,12 +236,22 @@ app.post("/admin/products/update/:id", (req, res) => {
 });
 
 // Hapus Product
-app.post("/admin/products/delete", (req, res) => {
+app.post("/admin/products/delete", isAuthenticated, (req, res) => {
   const productId = req.body.idProduct;
   db.collection("products")
     .deleteOne({ _id: new ObjectId(productId) })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// Logout
+app.get("/admin/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send("Logout failed");
+    }
+    res.redirect("/admin");
+  });
 });
 
 // Start server

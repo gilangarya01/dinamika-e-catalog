@@ -20,31 +20,33 @@
               <div class="card-body p-5 text-center">
                 <h3 class="mb-5">Login</h3>
 
-                <div class="form-floating mb-3">
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="usernameInput"
-                    placeholder="John Doe"
-                    name="username"
-                  />
-                  <label for="usernameInput">Username</label>
-                </div>
+                <form action="/admin" method="post">
+                  <div class="form-floating mb-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="usernameInput"
+                      placeholder="John Doe"
+                      name="username"
+                    />
+                    <label for="usernameInput">Username</label>
+                  </div>
 
-                <div class="form-floating mb-5">
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="passwordInput"
-                    placeholder="Password"
-                    name="password"
-                  />
-                  <label for="passwordInput">Password</label>
-                </div>
+                  <div class="form-floating mb-5">
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="passwordInput"
+                      placeholder="Password"
+                      name="password"
+                    />
+                    <label for="passwordInput">Password</label>
+                  </div>
 
-                <div class="d-grid">
-                  <button class="btn btn-primary" type="button">Login</button>
-                </div>
+                  <div class="d-grid">
+                    <button class="btn btn-primary" type="submit">Login</button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
