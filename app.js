@@ -72,6 +72,9 @@ app.post("/registrasi", (req, res) => {
     });
 });
 
+app.get("/home", (req, res) => res.render("user/home.ejs"));
+app.get("/products", (req, res) => res.render("user/products.ejs"));
+
 // Admin
 app.get("/admin", (req, res) => res.render("admin/login.ejs"));
 
@@ -97,9 +100,12 @@ app.post("/admin", (req, res) => {
 });
 
 // Halaman yang dilindungi oleh autentikasi
-app.get("/admin/dashboard", isAuthenticated, (req, res) =>
-  res.render("admin/dashboard.ejs")
-);
+app.get("/admin/dashboard", isAuthenticated, async (req, res) => {
+  let countUser;
+  const userCount = await db.collection("users").countDocuments();
+  const productCount = await db.collection("products").countDocuments();
+  res.render("admin/dashboard.ejs", { userCount, productCount });
+});
 
 app.get("/admin/useraccess", isAuthenticated, (req, res) =>
   db
