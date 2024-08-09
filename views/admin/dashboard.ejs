@@ -58,7 +58,50 @@
         </ul>
         <hr />
         <div class="d-grid gap-2">
-          <a href="/admin/logout" class="btn btn-danger">Logout</a>
+          <a
+            href=""
+            data-bs-toggle="modal"
+            data-bs-target="#konfirmasiModal"
+            class="btn btn-danger"
+            >Logout</a
+          >
+        </div>
+      </div>
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="konfirmasiModal"
+        tabindex="-1"
+        aria-labelledby="konfirmasiModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="konfirmasiModalLabel">
+                Logout Akun
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Apa anda yakin ingin logout dari akun ?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <a href="/admin/logout" class="btn btn-danger">Logout</a>
+            </div>
+          </div>
         </div>
       </div>
       <!-- Content -->
@@ -76,7 +119,7 @@
             <div class="row">
               <div class="row">
                 <div class="col-3">
-                  <div class="card m-3 bg-primary">
+                  <div class="card m-3 bg-primary" style="height: 6rem">
                     <div class="card-body">
                       <h5 class="card-title">
                         <i class="fa-solid fa-users"></i> User
@@ -86,7 +129,7 @@
                   </div>
                 </div>
                 <div class="col-3">
-                  <div class="card m-3 bg-success">
+                  <div class="card m-3 bg-success" style="height: 6rem">
                     <div class="card-body">
                       <h5 class="card-title">
                         <i class="fa-solid fa-boxes-stacked"></i> Products
@@ -96,7 +139,7 @@
                   </div>
                 </div>
                 <div class="col-3">
-                  <div class="card m-3 bg-danger">
+                  <div class="card m-3 bg-danger" style="height: 6rem">
                     <div class="card-body">
                       <h5 class="card-title">
                         <i class="fa-solid fa-cart-shopping"></i> Transaction
@@ -106,14 +149,18 @@
                   </div>
                 </div>
                 <div class="col-3">
-                  <div class="card m-3 bg-warning text-black">
+                  <div
+                    class="card m-3 bg-warning text-black"
+                    style="height: 6rem"
+                  >
                     <div class="card-body">
                       <h5 class="card-title">
                         <i class="fa-solid fa-boxes-stacked"></i> Earning
                       </h5>
-                      <h5 class="card-text">
-                        <%= rupiah(totalCount[0].earning) %>
-                      </h5>
+                      <h6 class="card-text">
+                        <%= totalCount.length ? rupiah(totalCount[0].earning) :
+                        "Rp. 0,00" %>
+                      </h6>
                     </div>
                   </div>
                 </div>

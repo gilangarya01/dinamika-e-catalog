@@ -78,11 +78,52 @@
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <a class="dropdown-item" href="/logout"
+                  <a
+                    class="dropdown-item"
+                    href=""
+                    data-bs-toggle="modal"
+                    data-bs-target="#konfirmasiModal"
                     ><i class="fa-solid fa-right-from-bracket"></i> Logout</a
                   >
                 </li>
               </ul>
+            </div>
+            <!-- Modal -->
+            <div
+              class="modal fade"
+              id="konfirmasiModal"
+              tabindex="-1"
+              aria-labelledby="konfirmasiModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="konfirmasiModalLabel">
+                      Logout Akun
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    Apa anda yakin ingin logout dari akun ?
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <a href="/logout" class="btn btn-danger">Logout</a>
+                  </div>
+                </div>
+              </div>
             </div>
             <% } %>
           </div>
@@ -171,7 +212,9 @@
             <div class="card">
               <img src="/images/box.jpg" class="card-img-top" alt="Product" />
               <div class="card-body">
-                <h5 class="card-title"><%= product.nama %></h5>
+                <h5 class="card-title">
+                  <%= `${product.nama} ${product.satuan}` %>
+                </h5>
                 <p class="card-text"><%= rupiah(product.hargaEceran) %></p>
               </div>
             </div>
@@ -188,7 +231,9 @@
             <div class="card">
               <img src="/images/box.jpg" class="card-img-top" alt="Product" />
               <div class="card-body">
-                <h5 class="card-title"><%= product.nama %></h5>
+                <h5 class="card-title">
+                  <%= `${product.nama} ${product.satuan}` %>
+                </h5>
                 <p class="card-text"><%= rupiah(product.hargaEceran) %></p>
               </div>
             </div>

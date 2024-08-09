@@ -119,7 +119,12 @@ router.post("/transactions", async (req, res) => {
     .collection("products")
     .updateOne(
       { _id: new ObjectId(req.body.idProduct) },
-      { $inc: { sold: 1 } }
+      {
+        $inc: {
+          sold: parseInt(req.body.jumlah),
+          stok: -parseInt(req.body.jumlah),
+        },
+      }
     );
 
   db.collection("transactions")
@@ -136,22 +141,28 @@ router.get("/profile", async (req, res) => {
   const db = req.db;
   user = req.session.user ? req.session.user : null;
   idPembeli = null;
-  if (user && user._id) {
-    idPembeli = user._id;
-  } else {
-    idPembeli = 0;
-  }
+  user && user._id ? (idPembeli = user._id) : (idPembeli = 0);
   let transactions = await db
     .collection("transactions")
     .find({ idPembeli: idPembeli })
     .toArray();
-  res.render("user/profile.ejs", { user, transactions });
+
+  let userData = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(idPembeli) });
+
+  res.render("user/profile.ejs", { user, transactions, userData });
 });
 
 router.get("/profile/update", async (req, res) => {
   const db = req.db;
   user = req.session.user ? req.session.user : null;
-  res.render("user/updateprofile.ejs", { user });
+  idPembeli = null;
+  user && user._id ? (idPembeli = user._id) : (idPembeli = 0);
+  let userData = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(idPembeli) });
+  res.render("user/updateprofile.ejs", { user, userData });
 });
 
 router.post("/profile/delete", (req, res) => {
@@ -164,9 +175,22 @@ router.post("/profile/delete", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-router.post("/profile/update/:id", (req, res) => {
+router.post("/profile/update/:id", async (req, res) => {
   const db = req.db;
   const userId = req.params.id;
+
+  let userData = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(userId) });
+
+  if (
+    userData.password !== req.body.password ||
+    req.body.password !== req.body.repassword
+  ) {
+    idPembeli = null;
+    user && user._id ? (idPembeli = user._id) : (idPembeli = 0);
+    return res.render("user/updateprofile.ejs", { user, userData });
+  }
 
   const updateUser = {
     username: req.body.username,
@@ -184,11 +208,7 @@ router.get("/history", async (req, res) => {
   const db = req.db;
   user = req.session.user ? req.session.user : null;
   idPembeli = null;
-  if (user && user._id) {
-    idPembeli = user._id;
-  } else {
-    idPembeli = 0;
-  }
+  user && user._id ? (idPembeli = user._id) : (idPembeli = 0);
 
   let transactions = await db
     .collection("transactions")
