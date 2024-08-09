@@ -44,13 +44,13 @@
             </a>
           </li>
           <li class="mb-2">
-            <a href="/admin/transactions" class="nav-link text-white">
+            <a href="/admin/transactions" class="nav-link text-white opened">
               <i class="fa-solid fa-money-bill"></i>
               Transactions
             </a>
           </li>
           <li class="mb-2">
-            <a href="/admin/useraccess" class="nav-link text-white opened">
+            <a href="/admin/useraccess" class="nav-link text-white">
               <i class="fa-solid fa-address-card"></i>
               Users Access
             </a>
@@ -67,85 +67,28 @@
           class="rounded ps-3 pt-2 pb-1 mb-3"
           style="background-color: #2f343a"
         >
-          <h4>User Access</h4>
+          <h4>Transactions</h4>
         </div>
         <div class="rounded p-2" style="background-color: #2f343a">
-          <a
-            href="/admin/useraccess/user"
-            class="btn btn-success float-end mb-2"
-            ><i class="fa-solid fa-plus"></i> Tambah Admin</a
-          >
           <table class="table table-striped table-bordered text-center">
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Username</th>
-                <th scope="col">Access</th>
-                <th scope="col">Aksi</th>
+                <th scope="col">Nama Pembeli</th>
+                <th scope="col">Nama Product</th>
+                <th scope="col">Jumlah</th>
+                <th scope="col">Total</th>
               </tr>
             </thead>
             <tbody class="table-group-divider">
-              <% users.forEach((user,i) => { %>
+              <% transactions.forEach((transaction, i) => { %>
               <tr>
                 <th scope="row"><%= ++i %></th>
-                <td><%= user.username %></td>
-                <td>Admin</td>
-                <td>
-                  <a
-                    href=""
-                    class="badge text-bg-danger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal<%= i %>"
-                    ><i class="fa-solid fa-trash"></i> Remove</a
-                  >
-                </td>
+                <td><%= transaction.namaPembeli %></td>
+                <td><%= transaction.namaProduk %></td>
+                <td><%= transaction.jumlah %></td>
+                <td><%= transaction.total %></td>
               </tr>
-              <!-- Modal -->
-              <div
-                class="modal fade"
-                id="modal<%= i %>"
-                tabindex="-1"
-                aria-labelledby="modalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="modalLabel">
-                        Admin Level
-                      </h1>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      ></button>
-                    </div>
-                    <div class="modal-body">
-                      Yakin ingin menghapus access admin user ini?
-                    </div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                      <form action="/admin/useraccess/remove" method="post">
-                        <input
-                          type="hidden"
-                          name="id"
-                          value="<%= user._id  %>"
-                        />
-                        <button type="submit" class="btn btn-primary">
-                          Ya
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
               <% }); %>
             </tbody>
           </table>
@@ -158,6 +101,5 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script src="/js/custom.js"></script>
   </body>
 </html>

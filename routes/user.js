@@ -1,4 +1,5 @@
 const express = require("express");
+const { ObjectId } = require("mongodb");
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.post("/login", (req, res) => {
     .findOne(query)
     .then((user) => {
       if (!user) {
-        return res.render("user/home.ejs", { error: "User not found" });
+        return res.render("login.ejs", { error: "User not found" });
       }
       req.session.user = user;
       res.redirect("/");
@@ -40,7 +41,7 @@ router.post("/registrasi", (req, res) => {
 
   db.collection("users")
     .insertOne(newUser)
-    .then(() => res.redirect("/"))
+    .then(() => res.redirect("/login"))
     .catch((err) => {
       console.error("Error: " + err);
       res.status(500).send("User addition failed");
@@ -85,6 +86,126 @@ router.get("/products/search", (req, res) => {
     .toArray()
     .then((products) => res.render("user/products.ejs", { products }))
     .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+router.get("/detail-product/:id", (req, res) => {
+  const db = req.db;
+  const productId = req.params.id;
+  user = req.session.user ? req.session.user : null;
+
+  db.collection("products")
+    .findOne({ _id: new ObjectId(productId) })
+    .then((product) => {
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      res.render("user/detail.ejs", { product, user });
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// Transactions
+router.post("/transactions", async (req, res) => {
+  const db = req.db;
+  const newTrans = {
+    date: Date.now(),
+    idPembeli: req.body.idPembeli,
+    idProduct: req.body.idProduct,
+    jumlah: parseInt(req.body.jumlah),
+    total: parseInt(req.body.total),
+  };
+
+  await db
+    .collection("products")
+    .updateOne(
+      { _id: new ObjectId(req.body.idProduct) },
+      { $inc: { sold: 1 } }
+    );
+
+  db.collection("transactions")
+    .insertOne(newTrans)
+    .then(() => res.redirect("/products"))
+    .catch((err) => {
+      console.error("Error: " + err);
+      res.status(500).send("Transaction addition failed");
+    });
+});
+
+// Profile
+router.get("/profile", async (req, res) => {
+  const db = req.db;
+  user = req.session.user ? req.session.user : null;
+  idPembeli = null;
+  if (user && user._id) {
+    idPembeli = user._id;
+  } else {
+    idPembeli = 0;
+  }
+  let transactions = await db
+    .collection("transactions")
+    .find({ idPembeli: idPembeli })
+    .toArray();
+  res.render("user/profile.ejs", { user, transactions });
+});
+
+router.get("/profile/update", async (req, res) => {
+  const db = req.db;
+  user = req.session.user ? req.session.user : null;
+  res.render("user/updateprofile.ejs", { user });
+});
+
+router.post("/profile/delete", (req, res) => {
+  const db = req.db;
+  const id = req.body.id;
+
+  db.collection("users")
+    .deleteOne({ _id: new ObjectId(id) })
+    .then(() => res.redirect("/login"))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+router.post("/profile/update/:id", (req, res) => {
+  const db = req.db;
+  const userId = req.params.id;
+
+  const updateUser = {
+    username: req.body.username,
+    email: req.body.email,
+  };
+
+  db.collection("users")
+    .updateOne({ _id: new ObjectId(userId) }, { $set: updateUser })
+    .then(() => res.redirect("/profile"))
+    .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// History
+router.get("/history", async (req, res) => {
+  const db = req.db;
+  user = req.session.user ? req.session.user : null;
+  idPembeli = null;
+  if (user && user._id) {
+    idPembeli = user._id;
+  } else {
+    idPembeli = 0;
+  }
+
+  let transactions = await db
+    .collection("transactions")
+    .find({ idPembeli: idPembeli })
+    .toArray();
+  for (let transaction of transactions) {
+    let product = await db
+      .collection("products")
+      .findOne(
+        { _id: new ObjectId(transaction.idProduct) },
+        { projection: { nama: 1, hargaEceran: 1 } }
+      );
+
+    transaction.namaProduk = product ? product.nama : "Produk";
+    transaction.hargaProduk = product ? product.hargaEceran : 0;
+  }
+  res.render("user/history.ejs", { user, transactions });
 });
 
 router.get("/logout", (req, res) => {

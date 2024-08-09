@@ -30,7 +30,24 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
   const db = req.db;
   const userCount = await db.collection("users").countDocuments();
   const productCount = await db.collection("products").countDocuments();
-  res.render("admin/dashboard.ejs", { userCount, productCount });
+  const transCount = await db.collection("transactions").countDocuments();
+  const totalCount = await db
+    .collection("transactions")
+    .aggregate([
+      {
+        $group: {
+          _id: null,
+          earning: { $sum: "$total" },
+        },
+      },
+    ])
+    .toArray();
+  res.render("admin/dashboard.ejs", {
+    userCount,
+    productCount,
+    transCount,
+    totalCount,
+  });
 });
 
 router.get("/useraccess", isAuthenticated, (req, res) => {
@@ -176,6 +193,33 @@ router.post("/products/delete", isAuthenticated, (req, res) => {
     .deleteOne({ _id: new ObjectId(productId) })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// Transaction
+router.get("/transactions", isAuthenticated, async (req, res) => {
+  const db = req.db;
+  let transactions = await db.collection("transactions").find().toArray();
+
+  for (let transaction of transactions) {
+    let buyer = await db
+      .collection("users")
+      .findOne(
+        { _id: new ObjectId(transaction.idPembeli) },
+        { projection: { username: 1 } }
+      );
+
+    let product = await db
+      .collection("products")
+      .findOne(
+        { _id: new ObjectId(transaction.idProduct) },
+        { projection: { nama: 1 } }
+      );
+
+    transaction.namaPembeli = buyer ? buyer.username : "Pembeli ";
+    transaction.namaProduk = product ? product.nama : "Produk ";
+  }
+
+  res.render("admin/transactions.ejs", { transactions });
 });
 
 router.get("/logout", (req, res) => {

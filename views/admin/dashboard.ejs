@@ -44,8 +44,14 @@
             </a>
           </li>
           <li class="mb-2">
+            <a href="/admin/transactions" class="nav-link text-white">
+              <i class="fa-solid fa-money-bill"></i>
+              Transactions
+            </a>
+          </li>
+          <li class="mb-2">
             <a href="/admin/useraccess" class="nav-link text-white">
-              <i class="fa-solid fa-user"></i>
+              <i class="fa-solid fa-address-card"></i>
               Users Access
             </a>
           </li>
@@ -62,6 +68,8 @@
           style="background-color: #2f343a"
         >
           <h4>Dashboard</h4>
+          <% const rupiah = (number)=>{ return new Intl.NumberFormat("id-ID", {
+          style: "currency", currency: "IDR" }).format(number); } %>
         </div>
         <div class="rounded ps-3 pt-2 pb-1" style="background-color: #2f343a">
           <div>
@@ -93,7 +101,7 @@
                       <h5 class="card-title">
                         <i class="fa-solid fa-cart-shopping"></i> Transaction
                       </h5>
-                      <h4 class="card-text">10</h4>
+                      <h4 class="card-text"><%= transCount %></h4>
                     </div>
                   </div>
                 </div>
@@ -103,7 +111,9 @@
                       <h5 class="card-title">
                         <i class="fa-solid fa-boxes-stacked"></i> Earning
                       </h5>
-                      <h4 class="card-text">Rp.200000</h4>
+                      <h5 class="card-text">
+                        <%= rupiah(totalCount[0].earning) %>
+                      </h5>
                     </div>
                   </div>
                 </div>

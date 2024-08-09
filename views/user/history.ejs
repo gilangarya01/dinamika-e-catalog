@@ -14,6 +14,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     />
+
     <style>
       a {
         text-decoration: none;
@@ -89,65 +90,38 @@
         </div>
       </div>
     </nav>
-    <main class="container mt-5">
-      <div class="row">
-        <div class="col-lg-6">
-          <label for="basic-url" class="form-label">Cari Product</label>
-          <div class="input-group mb-3">
-            <form
-              action="/products/search"
-              method="get"
-              class="input-group mb-3"
-            >
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Nama Product"
-                name="nama"
-                aria-describedby="button-addon2"
-              />
-              <button
-                class="btn btn-outline-light"
-                type="submit"
-                id="button-addon2"
-              >
-                Button
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <div class="row gap-lg-3">
-        <h3>Nama Product</h3>
-        <% const rupiah = (number)=>{ return new Intl.NumberFormat("id-ID", {
-        style: "currency", currency: "IDR" }).format(number); } %> <%
-        if(products.length == 0) { %>
-        <h6>--Tidak ada Produk--</h6>
-        <% } %> <% products.forEach(product => { %>
-        <div class="col-6 col-lg-3">
-          <a href="/detail-product/<%= product._id %>">
-            <div class="card">
-              <img src="/images/box.jpg" class="card-img-top" alt="Product" />
-              <div class="card-body">
-                <h5 class="card-title"><%= product.nama %></h5>
-                <p class="card-text"><%= rupiah(product.hargaEceran) %></p>
+    <main class="container my-5">
+      <div class="row justify-content-center">
+        <div class="col col-lg-8">
+          <% const rupiah = (number)=>{ return new Intl.NumberFormat("id-ID", {
+          style: "currency", currency: "IDR" }).format(number); } %>
+          <h3 class="mb-3">Riwayat Pembelian</h3>
+          <% if(transactions.length == 0) { %>
+          <h6>--Tidak ada data pemebelian--</h6>
+          <% } %> <% transactions.forEach(trans => { %>
+          <div class="card shadow-0 border rounded-3 mb-2">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-4 me-2 me-lg-0 col-lg-3">
+                  <div
+                    class="bg-image hover-zoom ripple rounded ripple-surface"
+                  >
+                    <img src="/images/box.jpg" height="150" width="150" />
+                  </div>
+                </div>
+                <div class="col mt-2">
+                  <h5><%= trans.namaProduk %></h5>
+                  <h6>Harga : <%= rupiah(trans.hargaProduk) %></h6>
+                  <h6>Jumlah : <%= trans.jumlah %></h6>
+                  <h6>Total : <%= rupiah(trans.total) %></h6>
+                </div>
               </div>
             </div>
-          </a>
+          </div>
+          <% }); %>
         </div>
-        <% }); %>
       </div>
     </main>
-    <!-- Footer -->
-    <footer class="bg-body-tertiary text-center text-lg-start mt-4">
-      <div class="text-center p-3">
-        © 2024 Copyright:
-        <a class="text-body" href="https://github.com/gilangarya01"
-          >@gilangarya01</a
-        >
-      </div>
-    </footer>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

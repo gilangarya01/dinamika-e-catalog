@@ -14,6 +14,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     />
+
     <style>
       a {
         text-decoration: none;
@@ -89,65 +90,65 @@
         </div>
       </div>
     </nav>
-    <main class="container mt-5">
-      <div class="row">
-        <div class="col-lg-6">
-          <label for="basic-url" class="form-label">Cari Product</label>
-          <div class="input-group mb-3">
-            <form
-              action="/products/search"
-              method="get"
-              class="input-group mb-3"
-            >
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Nama Product"
-                name="nama"
-                aria-describedby="button-addon2"
-              />
-              <button
-                class="btn btn-outline-light"
-                type="submit"
-                id="button-addon2"
-              >
-                Button
-              </button>
-            </form>
+    <main class="container mt-5 col-lg-6">
+      <h4>Update Profile</h4>
+      <form action="/profile/update/<%= user._id  %>" method="post">
+        <div class="mb-3 mt-4">
+          <label for="usernameInput" class="form-label">Username</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              id="usernameInput"
+              name="username"
+              value="<%= user.username %>"
+            />
           </div>
         </div>
-      </div>
-
-      <div class="row gap-lg-3">
-        <h3>Nama Product</h3>
-        <% const rupiah = (number)=>{ return new Intl.NumberFormat("id-ID", {
-        style: "currency", currency: "IDR" }).format(number); } %> <%
-        if(products.length == 0) { %>
-        <h6>--Tidak ada Produk--</h6>
-        <% } %> <% products.forEach(product => { %>
-        <div class="col-6 col-lg-3">
-          <a href="/detail-product/<%= product._id %>">
-            <div class="card">
-              <img src="/images/box.jpg" class="card-img-top" alt="Product" />
-              <div class="card-body">
-                <h5 class="card-title"><%= product.nama %></h5>
-                <p class="card-text"><%= rupiah(product.hargaEceran) %></p>
-              </div>
-            </div>
-          </a>
+        <div class="mb-3">
+          <label for="emailInput" class="form-label">Email</label>
+          <div class="input-group">
+            <input
+              type="email"
+              class="form-control"
+              id="emailInput"
+              name="email"
+              value="<%= user.email %>"
+            />
+          </div>
         </div>
-        <% }); %>
-      </div>
+        <div class="row mb-3">
+          <div class="col-6">
+            <label for="passwordInput" class="form-label">Password</label>
+            <div class="input-group">
+              <input
+                type="password"
+                class="form-control"
+                id="passwordInput"
+                name="password"
+                value=""
+              />
+            </div>
+          </div>
+          <div class="col-6">
+            <label for="repasswordInput" class="form-label">Re-Password</label>
+            <div class="input-group">
+              <input
+                type="password"
+                class="form-control"
+                id="repasswordInput"
+                name="password"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+        <div class="mt-5">
+          <a href="/profile" class="btn btn-secondary">Close</a>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
     </main>
-    <!-- Footer -->
-    <footer class="bg-body-tertiary text-center text-lg-start mt-4">
-      <div class="text-center p-3">
-        © 2024 Copyright:
-        <a class="text-body" href="https://github.com/gilangarya01"
-          >@gilangarya01</a
-        >
-      </div>
-    </footer>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

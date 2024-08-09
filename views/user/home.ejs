@@ -46,7 +46,7 @@
           </ul>
           <div class="d-flex">
             <% if(!user) { %>
-            <a href="/login" class="btn btn-success">Login</a>
+            <a href="/login" class="btn btn-success btn-sm">Login</a>
             <% } else { %>
             <div class="nav-item dropdown">
               <div
@@ -67,18 +67,13 @@
               </div>
               <ul class="dropdown-menu">
                 <li>
-                  <a class="dropdown-item" href="#"
+                  <a class="dropdown-item" href="/profile"
                     ><i class="fa-regular fa-user"></i> Profile</a
                   >
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#"
-                    ><i class="fa-solid fa-cart-shopping"></i> Keranjang</a
-                  >
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#"
-                    ><i class="fa-solid fa-heart"></i> Favorit</a
+                  <a class="dropdown-item" href="/history"
+                    ><i class="fa-solid fa-cart-shopping"></i> Riwayat</a
                   >
                 </li>
                 <li><hr class="dropdown-divider" /></li>
@@ -172,7 +167,7 @@
         style: "currency", currency: "IDR" }).format(number); } %> <%
         if(recommendProduct.forEach(product => { %>
         <div class="col-6 col-lg-3">
-          <a href="/">
+          <a href="/detail-product/<%= product._id %>">
             <div class="card">
               <img src="/images/box.jpg" class="card-img-top" alt="Product" />
               <div class="card-body">
@@ -189,7 +184,7 @@
         <h3>Product Baru</h3>
         <% if(newProduct.forEach(product => { %>
         <div class="col-6 col-lg-3">
-          <a href="/">
+          <a href="/detail-product/<%= product._id %>">
             <div class="card">
               <img src="/images/box.jpg" class="card-img-top" alt="Product" />
               <div class="card-body">

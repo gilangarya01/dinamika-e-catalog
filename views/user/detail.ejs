@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dinamika E-Catalog</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+
+    <style>
+      a {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container">
+        <a class="navbar-brand" href="/">E-Catalog</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/products">Products</a>
+            </li>
+          </ul>
+          <div class="d-flex">
+            <% if(!user) { %>
+            <a href="/login" class="btn btn-success btn-sm">Login</a>
+            <% } else { %>
+            <div class="nav-item dropdown">
+              <div
+                class="nav-link"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <div class="d-flex align-items-center">
+                  <div
+                    class="rounded-circle border border-2 d-flex justify-content-center align-items-center"
+                    style="width: 2rem; height: 2rem"
+                  >
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <p class="mb-0 mx-2 text-capitalize"><%= user.username %></p>
+                </div>
+              </div>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="/profile"
+                    ><i class="fa-regular fa-user"></i> Profile</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/history"
+                    ><i class="fa-solid fa-cart-shopping"></i> Riwayat</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="/logout"
+                    ><i class="fa-solid fa-right-from-bracket"></i> Logout</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="container mt-5">
+      <% const rupiah = (number)=>{ return new Intl.NumberFormat("id-ID", {
+      style: "currency", currency: "IDR" }).format(number); } %>
+      <h4>Detail Product</h4>
+      <div class="row mt-3">
+        <div class="col col-lg-3">
+          <img src="/images/box.jpg" class="img-thumbnail" alt="..." />
+        </div>
+        <div class="col">
+          <h5>Nama Produk : <%= product.nama %></h5>
+          <h5>Deskripsi:</h5>
+          <p><%= product.deskripsi %></p>
+          <h5>Harga : <%= rupiah(product.hargaEceran) %></h5>
+          <h5>Satuan : <%= product.satuan %></h5>
+          <h5>Stok : <%= product.stok %></h5>
+          <h5>Sold : <%= product.sold %></h5>
+          <div class="areaBtn mt-5">
+            <a class="btn btn-secondary" href="/products" role="button"
+              >Close</a
+            >
+            <% if(user) { %>
+            <!-- Button trigger modal -->
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+            >
+              Beli
+            </button>
+            <% } else { %>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" disabled>Beli</button>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Modal -->
+    <% if(user) { %>
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <form action="/transactions" method="post" class="mt-4">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Pembayaran
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <!-- Modal Start -->
+              <label class="form-label">Pilih Bank :</label>
+              <div class="btn-group gap-2 mb-3">
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="chooseBank"
+                  id="option1"
+                  checked
+                />
+                <label class="btn btn-outline-light" for="option1"
+                  ><i class="fa-solid fa-house-flag"></i> Meta</label
+                >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="chooseBank"
+                  id="option2"
+                />
+                <label class="btn btn-outline-light" for="option2"
+                  ><i class="fa-solid fa-house-signal"></i> Lorem</label
+                >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="chooseBank"
+                  id="option3"
+                />
+                <label class="btn btn-outline-light" for="option3"
+                  ><i class="fa-solid fa-house-tsunami"></i> Yujo</label
+                >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="chooseBank"
+                  id="option4"
+                />
+                <label class="btn btn-outline-light" for="option4"
+                  ><i class="fa-solid fa-house-fire"></i> Fore</label
+                >
+              </div>
+              <input type="hidden" name="idPembeli" value="<%= user._id %>" />
+              <input
+                type="hidden"
+                name="idProduct"
+                value="<%= product._id %>"
+              />
+              <h6>Nama Product : <%= product.nama %></h6>
+              <h6>
+                Harga :
+                <span id="hargaProduct"
+                  ><%= rupiah(product.hargaEceran) %></span
+                >
+              </h6>
+              <div class="row mb-3">
+                <label
+                  for="jumlahInput"
+                  class="col-sm-2 col-form-label col-form-label-sm"
+                  >Jumlah</label
+                >
+                <div class="col col-lg-3">
+                  <input
+                    type="number"
+                    class="form-control form-control-sm"
+                    id="jumlahInput"
+                    placeholder="0"
+                    min="0"
+                    name="jumlah"
+                  />
+                </div>
+              </div>
+              <h5 class="mt-4">Total : <span id="totalPrice">0</span></h5>
+              <input type="hidden" id="totalHidden" name="total" value="0" />
+              <!-- Modal End -->
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#konfirmasiModal"
+                id="submitButton"
+                disabled
+              >
+                Konfirmasi
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <% } %>
+    <!-- Footer -->
+    <footer class="bg-body-tertiary text-center text-lg-start mt-4">
+      <div class="text-center p-3">
+        © 2024 Copyright:
+        <a class="text-body" href="https://github.com/gilangarya01"
+          >@gilangarya01</a
+        >
+      </div>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const hargaProductElement = document.getElementById("hargaProduct");
+        const jumlahInputElement = document.getElementById("jumlahInput");
+        const totalPriceElement = document.getElementById("totalPrice");
+        const totalPriceHidden = document.getElementById("totalHidden");
+        const submitButton = document.getElementById("submitButton");
+
+        const harga = parseFloat(
+          hargaProductElement.innerText
+            .replace(/[^0-9,]/g, "")
+            .replace(",", ".")
+        );
+
+        function updateTotal() {
+          const jumlah = parseInt(jumlahInputElement.value) || 0;
+          const total = harga * jumlah;
+          totalPriceElement.innerText = total.toLocaleString("id-ID", {
+            style: "currency",
+            currency: "IDR",
+          });
+          submitButton.disabled = jumlah <= 0;
+          totalPriceHidden.value = total;
+        }
+
+        jumlahInputElement.addEventListener("input", updateTotal);
+      });
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
