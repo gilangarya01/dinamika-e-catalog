@@ -23,7 +23,7 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container">
-        <a class="navbar-brand" href="/home">E-Catalog</a>
+        <a class="navbar-brand" href="/">E-Catalog</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -38,13 +38,16 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="/home">Home</a>
+              <a class="nav-link" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="/products">Products</a>
             </li>
           </ul>
           <div class="d-flex">
+            <% if(!user) { %>
+            <a href="/login" class="btn btn-success">Login</a>
+            <% } else { %>
             <div class="nav-item dropdown">
               <div
                 class="nav-link"
@@ -59,7 +62,7 @@
                   >
                     <i class="fa-solid fa-user"></i>
                   </div>
-                  <p class="mb-0 mx-2">Gilang</p>
+                  <p class="mb-0 mx-2 text-capitalize"><%= user.username %></p>
                 </div>
               </div>
               <ul class="dropdown-menu">
@@ -80,12 +83,13 @@
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
-                  <a class="dropdown-item" href="#"
+                  <a class="dropdown-item" href="/logout"
                     ><i class="fa-solid fa-right-from-bracket"></i> Logout</a
                   >
                 </li>
               </ul>
             </div>
+            <% } %>
           </div>
         </div>
       </div>
@@ -95,46 +99,49 @@
         <div class="col-lg-6">
           <label for="basic-url" class="form-label">Cari Product</label>
           <div class="input-group mb-3">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Nama Product..."
-            />
-            <button
-              class="btn btn-outline-light"
-              type="button"
-              id="button-addon2"
+            <form
+              action="/products/search"
+              method="get"
+              class="input-group mb-3"
             >
-              Button
-            </button>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Nama Product"
+                name="nama"
+                aria-describedby="button-addon2"
+              />
+              <button
+                class="btn btn-outline-light"
+                type="submit"
+                id="button-addon2"
+              >
+                Button
+              </button>
+            </form>
           </div>
         </div>
       </div>
 
       <div class="row gap-lg-3">
         <h3>Nama Product</h3>
+        <% const rupiah = (number)=>{ return new Intl.NumberFormat("id-ID", {
+        style: "currency", currency: "IDR" }).format(number); } %> <%
+        if(products.length == 0) { %>
+        <h6>--Tidak ada Produk--</h6>
+        <% } %> <% products.forEach(product => { %>
         <div class="col-6 col-lg-3">
           <a href="/">
             <div class="card">
               <img src="/images/box.jpg" class="card-img-top" alt="Product" />
               <div class="card-body">
-                <h5 class="card-title">Nama Product</h5>
-                <p class="card-text">Rp. 50.000</p>
+                <h5 class="card-title"><%= product.nama %></h5>
+                <p class="card-text"><%= rupiah(product.hargaEceran) %></p>
               </div>
             </div>
           </a>
         </div>
-        <div class="col-6 col-lg-3">
-          <a href="/">
-            <div class="card">
-              <img src="/images/box.jpg" class="card-img-top" alt="Product" />
-              <div class="card-body">
-                <h5 class="card-title">Nama Product</h5>
-                <p class="card-text">Rp. 50.000</p>
-              </div>
-            </div>
-          </a>
-        </div>
+        <% }); %>
       </div>
     </main>
     <!-- Footer -->

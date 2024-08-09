@@ -20,7 +20,7 @@ router.post("/", (req, res) => {
       if (!user) {
         return res.render("admin/login.ejs", { error: "User not found" });
       }
-      req.session.user = user;
+      req.session.admin = user;
       res.redirect("/admin/dashboard");
     })
     .catch((err) => res.status(500).json({ error: err.message }));
@@ -116,12 +116,14 @@ router.get("/products/search", isAuthenticated, (req, res) => {
 router.post("/products/add", isAuthenticated, (req, res) => {
   const db = req.db;
   const newProduct = {
+    date: Date.now(),
     nama: req.body.nama,
     deskripsi: req.body.deskripsi,
     hargaEceran: parseInt(req.body.hargaEceran),
     hargaGrosir: parseInt(req.body.hargaGrosir),
     satuan: `${req.body.satuan} ${req.body.massa}`,
     stok: parseInt(req.body.stok),
+    sold: 0,
   };
 
   db.collection("products")
