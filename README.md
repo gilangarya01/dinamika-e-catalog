@@ -46,7 +46,7 @@ Untuk mengakses websitenya pergi ke `http://localhost:8090`
 
 #### • Manual
 
-Pastikan anda memiliki `node js` dan `npm` pada environment
+Pastikan anda memiliki `node js`, `npm` dan `mongodb` pada environment
 
 1. Setelah clone, pindah ke folder project
 
@@ -54,13 +54,19 @@ Pastikan anda memiliki `node js` dan `npm` pada environment
 cd dinamika-e-catalog
 ```
 
-2. Install package npm yang diperlukan
+2. Import data ke mongodb
+
+```bash
+mongorestore --db nama_database /dump/uas-204160
+```
+
+3. Install package npm yang diperlukan
 
 ```bash
 npm install
 ```
 
-3. Jalankan website dengan `node` atau `nodemon`
+4. Jalankan website dengan `node` atau `nodemon`
 
 ```bash
 node index.js
